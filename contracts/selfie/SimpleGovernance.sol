@@ -54,6 +54,7 @@ contract SimpleGovernance {
     }
 
     function executeAction(uint256 actionId) external payable {
+
         require(_canBeExecuted(actionId), "Cannot execute this action");
         
         GovernanceAction storage actionToExecute = actions[actionId];
@@ -78,6 +79,7 @@ contract SimpleGovernance {
      */
     function _canBeExecuted(uint256 actionId) private view returns (bool) {
         GovernanceAction memory actionToExecute = actions[actionId];
+        
         return (
             actionToExecute.executedAt == 0 &&
             (block.timestamp - actionToExecute.proposedAt >= ACTION_DELAY_IN_SECONDS)
